@@ -61,15 +61,18 @@ class System(object):
 
 
 
-n1 = Node(1,[0,0])
-n2 = Node(2,[0,1])
-n3 = Node(3,[1,1])
-n4 = Node(4,[1,0])
-pole1 = Pole2D([n1,n2],1,1)
-pole2 = Pole2D([n2,n3],1,1)
-pole3 = Pole2D([n3,n1],1,1)
-pole4 = Pole2D([n3,n4],1,1)
-pole5 = Pole2D([n2,n4],1,1)
-pole6 = Pole2D([n1,n4],1,1)
-s = System([n1,n2,n3,n4],[pole1,pole2,pole3,pole4,pole5,pole6])
+if __name__ == "__main__":
+    n1 = Node(1,[0,0])
+    n2 = Node(2,[0,1])
+    n3 = Node(3,[1,1])
+    n4 = Node(4,[1,0])
+    pole1 = Pole2D([n1,n2],1,1)
+    pole2 = Pole2D([n2,n3],1,1)
+    pole3 = Pole2D([n3,n1],1,1)
+    pole4 = Pole2D([n3,n4],1,1)
+    pole5 = Pole2D([n2,n4],1,1)
+    pole6 = Pole2D([n1,n4],1,1)
+    s = System([n1,n2,n3,n4],[pole1,pole2,pole3,pole4,pole5,pole6])
+
+
 
