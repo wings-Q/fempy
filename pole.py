@@ -3,9 +3,9 @@ import math as m
 import matplotlib.pyplot as plt
 
 class Node(object):
-    def __init__(self,ID,position,transform=[0,0],force=[0,0]):
+    def __init__(self,ID,position,load=None):
         self.position = position
-        self.transform = transform
+        self.load = load
         self.ID = ID
 
 
@@ -57,15 +57,39 @@ class System(object):
     def display(self):
         pass
     def solve(self):
-        pass
+        k = self.KE()
+        P = n.zeros([2*len(self.nodes),1])
+        for node in self.nodes:
+            load = node.load
+            i = node.ID
+            if load is None:
+                continue
+            tranx = load[0][0]
+            trany = load[0][1]
+            forcex = load[1][0]
+            forcey = load[1][1]
+            if tranx != None:
+                k[2*i-2,2*i-2] = k[2*i-2,2*i-2]*(10**8)
+                P[2*i-2] = k[2*i-2,2*i-2]*tranx
+            if trany != None:
+                k[2*i-1,2*i-1] = k[2*i-1,2*i-1]*(10**8)
+                P[2*i-1] = k[2*i-1,2*i-1]*trany
+            P[2*i-2] = P[2*i-2]+forcex
+            P[2*i-1] = P[2*i-1]+forcey
+        print(k,P)
+        delta = n.dot(n.linalg.inv(k),P)
+        Force = n.dot(k,delta)
+        return delta,Force
+            
+
 
 
 
 if __name__ == "__main__":
-    n1 = Node(1,[0,0])
-    n2 = Node(2,[0,1])
-    n3 = Node(3,[1,1])
-    n4 = Node(4,[1,0])
+    n1 = Node(1,[0,0],[[0,0],[0,0]])
+    n2 = Node(2,[0,1],[[None,None],[1,1]])
+    n3 = Node(3,[1,1],[[1,None],[0,0]])
+    n4 = Node(4,[1,0],[[0,0],[0,0]])
     pole1 = Pole2D([n1,n2],1,1)
     pole2 = Pole2D([n2,n3],1,1)
     pole3 = Pole2D([n3,n1],1,1)
@@ -73,6 +97,8 @@ if __name__ == "__main__":
     pole5 = Pole2D([n2,n4],1,1)
     pole6 = Pole2D([n1,n4],1,1)
     s = System([n1,n2,n3,n4],[pole1,pole2,pole3,pole4,pole5,pole6])
+    d,f = s.solve()
+    print(f,'\n',d)
 
 
 
