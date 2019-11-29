@@ -57,7 +57,8 @@ class System(object):
     def display(self):
         pass
     def solve(self):
-        k = self.KE()
+        k1 = self.KE()
+        k0 = self.KE()
         P = n.zeros([2*len(self.nodes),1])
         for node in self.nodes:
             load = node.load
@@ -69,20 +70,16 @@ class System(object):
             forcex = load[1][0]
             forcey = load[1][1]
             if tranx != None:
-                k[2*i-2,2*i-2] = k[2*i-2,2*i-2]*(10**8)
-                P[2*i-2] = k[2*i-2,2*i-2]*tranx
+                k1[2*i-2,2*i-2] = k1[2*i-2,2*i-2]*(10**8)
+                P[2*i-2] = k1[2*i-2,2*i-2]*tranx
             if trany != None:
-                k[2*i-1,2*i-1] = k[2*i-1,2*i-1]*(10**8)
-                P[2*i-1] = k[2*i-1,2*i-1]*trany
+                k1[2*i-1,2*i-1] = k1[2*i-1,2*i-1]*(10**8)
+                P[2*i-1] = k1[2*i-1,2*i-1]*trany
             P[2*i-2] = P[2*i-2]+forcex
             P[2*i-1] = P[2*i-1]+forcey
-        print(k,P)
-        delta = n.dot(n.linalg.inv(k),P)
-        Force = n.dot(k,delta)
+        delta = n.dot(n.linalg.inv(k1),P)
+        Force = n.dot(k0,delta)
         return delta,Force
-            
-
-
 
 
 if __name__ == "__main__":
