@@ -1,4 +1,5 @@
 import numpy as n
+import matplotlib.pyplot as plt
 
 class Node(object):
     def __init__(self,ID,position,load=None):
@@ -97,17 +98,20 @@ for i in range(nx):
         k = k+1
 for i in range(nx-1):
     for j in range(ny-1):
-        n1 = nodes[i*8+j]
-        n4 = nodes[i*8+1+j]
-        n2 = nodes[i*8+j+8]
-        n3 = nodes[i*8+j+9]
-        element2Ds.append(element2D([n1,n2,n3,n4],1,0.5,1))
+        n1 = nodes[i*ny+j]
+        n4 = nodes[i*ny+1+j]
+        n2 = nodes[i*ny+j+ny]
+        n3 = nodes[i*ny+j+ny+1]
+        element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,10))
 #print(element2Ds[1].ID())
-nodes[len(nodes)-1].load = [[None,None],[0,10]]
+nodes[len(nodes)-1].load = [[None,None],[0,1]]
 nodes[0].load = [[0,0],[0,0]]
 
 
 #print(element2Ds[1].ID())
 s = System(nodes,element2Ds)
 delta,force = s.solve()
-print(force[:16])
+forcex = n.abs(force[1::2])
+forceimage = forcex.reshape((12,8))
+plt.imshow(forceimage)
+plt.savefig("./fy.png")
