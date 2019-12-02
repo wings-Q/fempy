@@ -1,6 +1,5 @@
 import numpy as n
 import math as m
-import matplotlib.pyplot as plt
 
 class Node(object):
     def __init__(self,ID,position,load=None):
