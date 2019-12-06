@@ -83,7 +83,6 @@ class System(object):
 
 nx = 120
 ny = 80
-vol = [12,8]
 nodes = []
 element2Ds = []
 k = 0
