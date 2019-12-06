@@ -81,8 +81,8 @@ class System(object):
 
 
 
-nx = 12
-ny = 8
+nx = 120
+ny = 80
 vol = [12,8]
 nodes = []
 element2Ds = []
@@ -102,7 +102,7 @@ for i in range(nx-1):
         n4 = nodes[i*ny+1+j]
         n2 = nodes[i*ny+j+ny]
         n3 = nodes[i*ny+j+ny+1]
-        element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,10))
+        element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,100))
 #print(element2Ds[1].ID())
 nodes[len(nodes)-1].load = [[None,None],[0,1]]
 nodes[0].load = [[0,0],[0,0]]
@@ -111,7 +111,30 @@ nodes[0].load = [[0,0],[0,0]]
 #print(element2Ds[1].ID())
 s = System(nodes,element2Ds)
 delta,force = s.solve()
-forcex = n.abs(force[1::2])
-forceimage = forcex.reshape((12,8))
-plt.imshow(forceimage)
-plt.savefig("./fy.png")
+deltay = n.abs(delta[1::2])
+deltayimage = deltay.reshape((nx,ny)).T
+plt.imshow(deltayimage)
+cax = plt.axes([0.85, 0.1, 0.075, 0.8])
+plt.colorbar(cax=cax)
+plt.savefig("./tmp/deltay.png")
+
+forcey = n.abs(force[1::2])
+forceyimage = forcey.reshape((nx,ny)).T
+plt.imshow(forceyimage)
+cax = plt.axes([0.85, 0.1, 0.075, 0.8])
+plt.colorbar(cax=cax)
+plt.savefig("./tmp/forcey.png")
+
+deltax = n.abs(delta[0::2])
+deltaximage = deltax.reshape((nx,ny)).T
+plt.imshow(deltaximage)
+cax = plt.axes([0.85, 0.1, 0.075, 0.8])
+plt.colorbar(cax=cax)
+plt.savefig("./tmp/deltax.png")
+
+forcex = n.abs(force[0::2])
+forceximage = forcex.reshape((nx,ny)).T
+plt.imshow(forceximage)
+cax = plt.axes([0.85, 0.1, 0.075, 0.8])
+plt.colorbar(cax=cax)
+plt.savefig("./tmp/forcex.png")
