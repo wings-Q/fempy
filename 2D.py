@@ -68,13 +68,13 @@ class System(object):
             forcex = load[1][0]
             forcey = load[1][1]
             if tranx != None:
-                k1[2*i-2,2*i-2] = k1[2*i-2,2*i-2]*(10**8)
-                P[2*i-2] = k1[2*i-2,2*i-2]*tranx
+                k1[2*i,2*i] = k1[2*i,2*i]*(10**8)
+                P[2*i] = k1[2*i,2*i]*tranx
             if trany != None:
-                k1[2*i-1,2*i-1] = k1[2*i-1,2*i-1]*(10**8)
-                P[2*i-1] = k1[2*i-1,2*i-1]*trany
-            P[2*i-2] = P[2*i-2]+forcex
-            P[2*i-1] = P[2*i-1]+forcey
+                k1[2*i+1,2*i+1] = k1[2*i+1,2*i+1]*(10**8)
+                P[2*i+1] = k1[2*i+1,2*i+1]*trany
+            P[2*i] = P[2*i]+forcex
+            P[2*i+1] = P[2*i+1]+forcey
         delta = n.dot(n.linalg.inv(k1),P)
         Force = n.dot(k0,delta)
         return delta,Force
@@ -92,7 +92,9 @@ for i in range(nx):
     for j in range(ny):
         positiony = j
         if i == 0:
-            nodes.append(Node(k,[i,j],[[0,None],[0,0]]))
+            nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
+        elif i == nx-1:
+            nodes.append(Node(k,[i,j],[[None,None],[1,0]]))
         else:
             nodes.append(Node(k,[i,j]))
         k = k+1
@@ -104,8 +106,8 @@ for i in range(nx-1):
         n3 = nodes[i*ny+j+ny+1]
         element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,100))
 #print(element2Ds[1].ID())
-nodes[len(nodes)-1].load = [[None,None],[0,1]]
-nodes[0].load = [[0,0],[0,0]]
+#nodes[len(nodes)-1].load = [[None,None],[0,1]]
+#nodes[0].load = [[0,0],[0,0]]
 
 
 #print(element2Ds[1].ID())
@@ -114,27 +116,19 @@ delta,force = s.solve()
 deltay = n.abs(delta[1::2])
 deltayimage = deltay.reshape((nx,ny)).T
 plt.imshow(deltayimage)
-cax = plt.axes([0.85, 0.1, 0.075, 0.8])
-plt.colorbar(cax=cax)
 plt.savefig("./tmp/deltay.png")
 
 forcey = n.abs(force[1::2])
 forceyimage = forcey.reshape((nx,ny)).T
 plt.imshow(forceyimage)
-cax = plt.axes([0.85, 0.1, 0.075, 0.8])
-plt.colorbar(cax=cax)
 plt.savefig("./tmp/forcey.png")
 
 deltax = n.abs(delta[0::2])
 deltaximage = deltax.reshape((nx,ny)).T
 plt.imshow(deltaximage)
-cax = plt.axes([0.85, 0.1, 0.075, 0.8])
-plt.colorbar(cax=cax)
 plt.savefig("./tmp/deltax.png")
 
 forcex = n.abs(force[0::2])
 forceximage = forcex.reshape((nx,ny)).T
 plt.imshow(forceximage)
-cax = plt.axes([0.85, 0.1, 0.075, 0.8])
-plt.colorbar(cax=cax)
 plt.savefig("./tmp/forcex.png")
