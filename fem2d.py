@@ -79,37 +79,44 @@ class System(object):
         Force = n.dot(k0,delta)
         return delta,Force
 
-
-
-nx = 120
-ny = 80
-nodes = []
-element2Ds = []
-k = 0
-for i in range(nx):
-    positionx = i
-    for j in range(ny):
-        positiony = j
-        if i == 0:
-            nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
-        elif i == nx-1:
-            nodes.append(Node(k,[i,j],[[None,None],[1,0]]))
-        else:
-            nodes.append(Node(k,[i,j]))
-        k = k+1
-for i in range(nx-1):
-    for j in range(ny-1):
-        n1 = nodes[i*ny+j]
-        n4 = nodes[i*ny+1+j]
-        n2 = nodes[i*ny+j+ny]
-        n3 = nodes[i*ny+j+ny+1]
-        element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,100))
+class mesh(object):
+    def __init__(self,nx,ny):
+        self.nx = nx
+        self.ny = ny
+    def create(self):
+        self.nx = 120
+        self.ny = 80
+        nodes = []
+        element2Ds = []
+        k = 0
+        for i in range(self.nx):
+            positionx = i
+            for j in range(self.ny):
+                positiony = j
+                if i == 0:
+                    nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
+                elif i == self.nx-1:
+                    nodes.append(Node(k,[i,j],[[None,None],[1,0]]))
+                else:
+                    nodes.append(Node(k,[i,j]))
+                k = k+1
+        for i in range(self.nx-1):
+            for j in range(self.ny-1):
+                n1 = nodes[i*self.ny+j]
+                n4 = nodes[i*self.ny+1+j]
+                n2 = nodes[i*self.ny+j+self.ny]
+                n3 = nodes[i*self.ny+j+self.ny+1]
+                element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,100))
+        return nodes,element2Ds
 #print(element2Ds[1].ID())
 #nodes[len(nodes)-1].load = [[None,None],[0,1]]
 #nodes[0].load = [[0,0],[0,0]]
 
 
 #print(element2Ds[1].ID())
+nx = 120
+ny = 80
+nodes,element2Ds = mesh(nx,ny).create()
 s = System(nodes,element2Ds)
 delta,force = s.solve()
 deltay = n.abs(delta[1::2])
