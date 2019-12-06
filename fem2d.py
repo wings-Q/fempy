@@ -79,7 +79,7 @@ class System(object):
         Force = n.dot(k0,delta)
         return delta,Force
 
-class mesh(object):
+class Mesh(object):
     def __init__(self,nx,ny):
         self.nx = nx
         self.ny = ny
@@ -116,7 +116,8 @@ class mesh(object):
 #print(element2Ds[1].ID())
 nx = 120
 ny = 80
-nodes,element2Ds = mesh(nx,ny).create()
+m = Mesh(nx,ny)
+nodes,element2Ds = m.create()
 s = System(nodes,element2Ds)
 delta,force = s.solve()
 deltay = n.abs(delta[1::2])
