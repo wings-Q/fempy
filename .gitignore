@@ -105,4 +105,9 @@ venv.bak/
 
 
 tmp/
+
 .vscode/
+
+vscode/
+
+.png

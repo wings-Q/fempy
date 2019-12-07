@@ -1,4 +1,4 @@
-import numpy as n
+import cupy as n
 import matplotlib.pyplot as plt
 
 class Node(object):
@@ -25,7 +25,8 @@ class element2D(object):
         H = 1/(1-self.v**2)
         r = (1-self.v)/2
         k = [al+r*be,m,r*al/2-be,-s,-be/2-r*al/2,-m,be/2-r*al,s]
-        ke = n.matrix([[k[0],k[1],k[2],k[3],k[4],k[5],k[6],k[7]],[k[1],k[0],k[7],k[6],k[5],k[4],k[3],k[2]],[k[2],k[7],k[0],k[5],k[6],k[3],k[4],k[1]],[k[3],k[6],k[5],k[0],k[7],k[2],k[1],k[4]],[k[4],k[5],k[6],k[7],k[0],k[1],k[2],k[3]],[k[5],k[4],k[3],k[2],k[1],k[0],k[7],k[6]],[k[6],k[3],k[4],k[1],k[2],k[7],k[0],k[5]],[k[7],k[2],k[1],k[4],k[3],k[6],k[5],k[0]]])
+        ke = n.asarray([[k[0],k[1],k[2],k[3],k[4],k[5],k[6],k[7]],[k[1],k[0],k[7],k[6],k[5],k[4],k[3],k[2]],[k[2],k[7],k[0],k[5],k[6],k[3],k[4],k[1]],[k[3],k[6],k[5],k[0],k[7],k[2],k[1],k[4]],[k[4],k[5],k[6],k[7],k[0],k[1],k[2],k[3]],[k[5],k[4],k[3],k[2],k[1],k[0],k[7],k[6]],[k[6],k[3],k[4],k[1],k[2],k[7],k[0],k[5]],[k[7],k[2],k[1],k[4],k[3],k[6],k[5],k[0]]])
+
         
         return (self.E*H*self.t)*ke
         
@@ -126,20 +127,24 @@ if __name__ == '__main__':
     delta,force = s.solve()
     deltay = n.abs(delta[1::2])
     deltayimage = deltay.reshape((nx,ny)).T
+    deltayimage = n.asnumpy(deltayimage)
     plt.imshow(deltayimage)
-    plt.savefig("./tmp/deltay.png")
+    plt.savefig("tmp\\deltay.png")
 
     forcey = n.abs(force[1::2])
-    forceyimage = forcey.reshape((nx,ny)).T
+    forceyimage = forcey.reshape((nx,ny)).T    
+    forceyimage = n.asnumpy(forceyimage)
     plt.imshow(forceyimage)
-    plt.savefig("./tmp/forcey.png")
+    plt.savefig("tmp\\forcey.png")
 
     deltax = n.abs(delta[0::2])
-    deltaximage = deltax.reshape((nx,ny)).T
+    deltaximage = deltax.reshape((nx,ny)).T    
+    deltaximage = n.asnumpy(deltaximage)
     plt.imshow(deltaximage)
-    plt.savefig("./tmp/deltax.png")
+    plt.savefig("tmp\\deltax.png")
 
     forcex = n.abs(force[0::2])
-    forceximage = forcex.reshape((nx,ny)).T
+    forceximage = forcex.reshape((nx,ny)).T    
+    forceximage = n.asnumpy(forceximage)
     plt.imshow(forceximage)
-    plt.savefig("./tmp/forcex.png")
+    plt.savefig("tmp\\forcex.png")
