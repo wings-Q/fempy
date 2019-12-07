@@ -106,7 +106,7 @@ class Mesh(object):
                 n2 = nodes[i*self.ny+j+self.ny]
                 n3 = nodes[i*self.ny+j+self.ny+1]
                 #print(i*(ny-1)+j)
-                e = E[i*(ny-1)+j]
+                e = E[i*(self.ny-1)+j]
                 #print(e)
                 
                 element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,e))
