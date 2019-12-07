@@ -10,7 +10,9 @@ nx = 40
 ny = 40
 
 m = Mesh(nx,ny)
-nodes,element2Ds = m.create()
+E = 0.5*n.ones(elenum)
+    
+nodes,element2Ds = m.create(E)
 
 s = System(nodes,element2Ds)
 

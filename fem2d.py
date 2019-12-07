@@ -83,9 +83,7 @@ class Mesh(object):
     def __init__(self,nx,ny):
         self.nx = nx
         self.ny = ny
-    def create(self):
-        self.nx = 120
-        self.ny = 80
+    def create(self,E):
         nodes = []
         element2Ds = []
         k = 0
@@ -106,36 +104,42 @@ class Mesh(object):
                 n4 = nodes[i*self.ny+1+j]
                 n2 = nodes[i*self.ny+j+self.ny]
                 n3 = nodes[i*self.ny+j+self.ny+1]
-                element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,100))
+                print(i*(ny-1)+j)
+                e = E[i*(ny-1)+j]
+                print(e)
+                
+                element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,e))
         return nodes,element2Ds
 #print(element2Ds[1].ID())
 #nodes[len(nodes)-1].load = [[None,None],[0,1]]
 #nodes[0].load = [[0,0],[0,0]]
 
-
+if __name__ == '__main__':
 #print(element2Ds[1].ID())
-nx = 120
-ny = 80
-m = Mesh(nx,ny)
-nodes,element2Ds = m.create()
-s = System(nodes,element2Ds)
-delta,force = s.solve()
-deltay = n.abs(delta[1::2])
-deltayimage = deltay.reshape((nx,ny)).T
-plt.imshow(deltayimage)
-plt.savefig("./tmp/deltay.png")
+    nx = 40
+    ny = 40
+    elenum = (nx-1)*(ny-1)
+    m = Mesh(nx,ny)
+    E = 100*n.ones(elenum)
+    nodes,element2Ds = m.create(E)
+    s = System(nodes,element2Ds)
+    delta,force = s.solve()
+    deltay = n.abs(delta[1::2])
+    deltayimage = deltay.reshape((nx,ny)).T
+    plt.imshow(deltayimage)
+    plt.savefig("./tmp/deltay.png")
 
-forcey = n.abs(force[1::2])
-forceyimage = forcey.reshape((nx,ny)).T
-plt.imshow(forceyimage)
-plt.savefig("./tmp/forcey.png")
+    forcey = n.abs(force[1::2])
+    forceyimage = forcey.reshape((nx,ny)).T
+    plt.imshow(forceyimage)
+    plt.savefig("./tmp/forcey.png")
 
-deltax = n.abs(delta[0::2])
-deltaximage = deltax.reshape((nx,ny)).T
-plt.imshow(deltaximage)
-plt.savefig("./tmp/deltax.png")
+    deltax = n.abs(delta[0::2])
+    deltaximage = deltax.reshape((nx,ny)).T
+    plt.imshow(deltaximage)
+    plt.savefig("./tmp/deltax.png")
 
-forcex = n.abs(force[0::2])
-forceximage = forcex.reshape((nx,ny)).T
-plt.imshow(forceximage)
-plt.savefig("./tmp/forcex.png")
+    forcex = n.abs(force[0::2])
+    forceximage = forcex.reshape((nx,ny)).T
+    plt.imshow(forceximage)
+    plt.savefig("./tmp/forcex.png")
