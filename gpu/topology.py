@@ -3,8 +3,8 @@ import cupy as cp
 from sko.GA import GA
 from sko.PSO import PSO
 
-nx = 50
-ny = 50
+nx = 20
+ny = 20
 den = 0.5
 h = 3
 m = Mesh(nx,ny)
@@ -23,19 +23,19 @@ def opfunc(densipy):
     delta,force = s.solve()
     return cp.dot(delta.T,force)
 
-ga = PSO(func=opfunc,dim = elenum,lb=dens0,ub=dens1,max_iter=1)
+ga = PSO(func=opfunc,dim = elenum,lb=dens0,ub=dens1)
 
 from sko.operators import crossover
 
 #ga.register(operator_name='crossover', operator=crossover.crossover_1point)
 
-
-denmat = ga.run()
-print(denmat)
-denlist=[]
-print(ga.gbest_x)
-print(ga.gbest_y)
-
-denimage = ga.gbest_x.reshape((nx-1,ny-1)).T
-plt.imshow(denimage)
-plt.savefig("tmp\\denimage.png")
+for i in range(150):
+    denmat = ga.run(10)
+    #print(denmat)
+    #denlist=[]
+    #print(ga.gbest_x)
+    #print(ga.gbest_y)
+    denimage = ga.gbest_x.reshape((nx-1,ny-1)).T
+    plt.imshow(denimage)
+    filename = "tmp\\denimage"+str(i+1)+".png"
+    plt.savefig(filename)
