@@ -80,6 +80,19 @@ class System(object):
         Force = n.dot(k0,delta)
         return delta,Force
 
+    def dc(self,h,dens):
+        dcs = []
+        delta,force = self.solve()
+        for i,el2d in enumerate(self.el2ds):
+            eldelta = []
+            for elid in el2d.ID():
+                eldelta.append(delta[2*elid])
+                eldelta.append(delta[2*elid+1])
+            eldelta = n.asarray(eldelta)
+            dc = h*(dens[i])**(h-1)*n.dot(eldelta.T,n.dot(el2d.KE(),eldelta))
+            dcs.append(dc[0][0])
+        return dcs
+
 class Mesh(object):
     def __init__(self,nx,ny):
         self.nx = nx
@@ -92,13 +105,14 @@ class Mesh(object):
             positionx = i
             for j in range(self.ny):
                 positiony = j
-                if i == 0:
+                if i == 0 and (self.ny//3)<j<(2*self.ny//3):
                     nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
                 elif i == self.nx-1:
                     nodes.append(Node(k,[i,j],[[None,None],[1,0]]))
                 else:
                     nodes.append(Node(k,[i,j]))
                 k = k+1
+        #nodes[len(nodes)-self.ny//2].load = [[None,None],[0,1]]
         for i in range(self.nx-1):
             for j in range(self.ny-1):
                 n1 = nodes[i*self.ny+j]
@@ -111,6 +125,8 @@ class Mesh(object):
                 
                 element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,e))
         return nodes,element2Ds
+
+    
 #print(element2Ds[1].ID())
 #nodes[len(nodes)-1].load = [[None,None],[0,1]]
 #nodes[0].load = [[0,0],[0,0]]
