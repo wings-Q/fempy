@@ -9,11 +9,13 @@ cp.cuda.set_allocator(None)
 cp.cuda.set_pinned_memory_allocator(None)
 
 
-nx = 90
-ny = 80
+nx = 81
+ny = 81
 den = 0.2
-h = 3
+h = 5
 m = Mesh(nx,ny,1,1)
+loads1 = [{'nodeID':nx-1,'load':[[None,0],[0,0]]},{'nodeID':nx*ny-1,'load':[[None,0],[0,0]]},{'nodeID':ny*(nx//3)-1,'load':[[None,None],[0,2]]}]
+loads1 = [{'nodeID':nx-1,'load':[[None,0],[0,0]]},{'nodeID':nx*ny-1,'load':[[None,0],[0,0]]},{'nodeID':ny*(nx//3*2)-1,'load':[[None,None],[0,2]]}]
 elenum = (nx-1)*(ny-1)
 dens = cp.full(elenum,den)
 E = dens**h

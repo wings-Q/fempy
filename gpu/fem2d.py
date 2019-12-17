@@ -62,7 +62,6 @@ class System(object):
             for i in range(8):
                 for j in range(8):
                     ke[elu[i],elu[j]] = ke[elu[i],elu[j]] + elke[i,j]
-        print(ke)
         return ke
     def solve(self):
         k1 = self.KE()
@@ -102,6 +101,10 @@ class System(object):
             dcs.append(dc[0][0])
         return dcs
 
+    def load(self,loads):
+        for load in loads:
+            self.nodes[load['nodeID']].load = load['load']
+
 class Mesh(object):
     def __init__(self,nx,ny,a,b):
         self.nx = nx
@@ -116,12 +119,7 @@ class Mesh(object):
             positionx = i*2*self.a
             for j in range(self.ny):
                 positiony = j*2*self.b
-                if i == 0 and (self.ny//2-6)<j<(self.ny//2+7):
-                    nodes.append(Node(k,[positionx,positiony],[[0,0],[0,0]]))
-                elif i == self.nx-1:
-                    nodes.append(Node(k,[positionx,positiony],[[None,None],[1,0]]))
-                else:
-                    nodes.append(Node(k,[positionx,positiony]))
+                nodes.append(Node(k,[positionx,positiony]))
                 k = k+1
         #nodes[len(nodes)-self.ny//2].load = [[None,None],[0,1]]
         for i in range(self.nx-1):
@@ -158,10 +156,15 @@ if __name__ == '__main__':
     nx = 81
     ny = 81
     elenum = (nx-1)*(ny-1)
-    m = Mesh(nx,ny,1,0.6)
+    m = Mesh(nx,ny,1,1)
     E = 100*n.ones(elenum)
     nodes,element2Ds = m.create(E)
     s = System(nodes,element2Ds)
+    loads1 = [{'nodeID':nx-1,'load':[[0,0],[0,0]]},{'nodeID':nx*ny-1,'load':[[0,0],[0,0]]},{'nodeID':ny*(nx//3),'load':[[None,None],[0,2]]}]
+    loads2 = [{'nodeID':nx*ny-ny//3-1,'load':[[0,0],[0,0]]}]
+    for i in range(nx-1):
+        loads2.append({'nodeID':i,'load':[[None,None],[-2,0]]})
+    s.load(loads2)
     delta,force = s.solve()
     deltay = n.abs(delta[1::2])
     deltayimage = deltay.reshape((nx,ny)).T
