@@ -62,6 +62,7 @@ class System(object):
             for i in range(8):
                 for j in range(8):
                     ke[elu[i],elu[j]] = ke[elu[i],elu[j]] + elke[i,j]
+        print(ke)
         return ke
     def solve(self):
         k1 = self.KE()
@@ -116,11 +117,11 @@ class Mesh(object):
             for j in range(self.ny):
                 positiony = j*2*self.b
                 if i == 0 and (self.ny//2-6)<j<(self.ny//2+7):
-                    nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
+                    nodes.append(Node(k,[positionx,positiony],[[0,0],[0,0]]))
                 elif i == self.nx-1:
-                    nodes.append(Node(k,[i,j],[[None,None],[1,0]]))
+                    nodes.append(Node(k,[positionx,positiony],[[None,None],[1,0]]))
                 else:
-                    nodes.append(Node(k,[i,j]))
+                    nodes.append(Node(k,[positionx,positiony]))
                 k = k+1
         #nodes[len(nodes)-self.ny//2].load = [[None,None],[0,1]]
         for i in range(self.nx-1):
@@ -154,10 +155,10 @@ if __name__ == '__main__':
     # Disable memory pool for pinned memory (CPU).
     n.cuda.set_pinned_memory_allocator(None)
 #print(element2Ds[1].ID())
-    nx = 120
-    ny = 60
+    nx = 81
+    ny = 81
     elenum = (nx-1)*(ny-1)
-    m = Mesh(nx,ny)
+    m = Mesh(nx,ny,1,0.6)
     E = 100*n.ones(elenum)
     nodes,element2Ds = m.create(E)
     s = System(nodes,element2Ds)
