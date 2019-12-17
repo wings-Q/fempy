@@ -1,6 +1,7 @@
 import cupy as n
 import matplotlib.pyplot as plt
 
+
 class Node(object):
     def __init__(self,ID,position,load=None):
         self.position = position
@@ -24,8 +25,15 @@ class element2D(object):
         s = (1-3*self.v)/8
         H = 1/(1-self.v**2)
         r = (1-self.v)/2
-        k = [al+r*be,m,r*al/2-be,-s,-be/2-r*al/2,-m,be/2-r*al,s]
-        ke = n.asarray([[k[0],k[1],k[2],k[3],k[4],k[5],k[6],k[7]],[k[1],k[0],k[7],k[6],k[5],k[4],k[3],k[2]],[k[2],k[7],k[0],k[5],k[6],k[3],k[4],k[1]],[k[3],k[6],k[5],k[0],k[7],k[2],k[1],k[4]],[k[4],k[5],k[6],k[7],k[0],k[1],k[2],k[3]],[k[5],k[4],k[3],k[2],k[1],k[0],k[7],k[6]],[k[6],k[3],k[4],k[1],k[2],k[7],k[0],k[5]],[k[7],k[2],k[1],k[4],k[3],k[6],k[5],k[0]]])
+        k = [al+r*be,m,r*al/2-be,-s,-be/2-r*al/2,-m,be/2-r*al,s,be+r*al]
+        ke = n.asarray([[k[8],k[1],k[2],k[3],k[4],k[5],k[6],k[7]],\
+                        [k[1],k[0],k[7],k[6],k[5],k[4],k[3],k[2]],\
+                        [k[2],k[7],k[8],k[5],k[6],k[3],k[4],k[1]],\
+                        [k[3],k[6],k[5],k[0],k[7],k[2],k[1],k[4]],\
+                        [k[4],k[5],k[6],k[7],k[8],k[1],k[2],k[3]],\
+                        [k[5],k[4],k[3],k[2],k[1],k[0],k[7],k[6]],\
+                        [k[6],k[3],k[4],k[1],k[2],k[7],k[8],k[5]],\
+                        [k[7],k[2],k[1],k[4],k[3],k[6],k[5],k[0]]])
 
         
         return (self.E*H*self.t)*ke
@@ -76,7 +84,7 @@ class System(object):
                 P[2*i+1] = k1[2*i+1,2*i+1]*trany
             P[2*i] = P[2*i]+forcex
             P[2*i+1] = P[2*i+1]+forcey
-        delta = n.dot(n.linalg.inv(k1),P)
+        delta = n.linalg.solve(k1,P)
         Force = n.dot(k0,delta)
         return delta,Force
 
@@ -105,7 +113,7 @@ class Mesh(object):
             positionx = i
             for j in range(self.ny):
                 positiony = j
-                if i == 0 and (self.ny//3)<j<(2*self.ny//3):
+                if i == 0 and (self.ny//2-6)<j<(self.ny//2+7):
                     nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
                 elif i == self.nx-1:
                     nodes.append(Node(k,[i,j],[[None,None],[1,0]]))
@@ -125,6 +133,11 @@ class Mesh(object):
                 
                 element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,e))
         return nodes,element2Ds
+    
+    def changeE(self,element2Ds,E):
+        for n,el2d in enumerate(element2Ds):
+            el2d.E = E[n]
+        return element2Ds
 
     
 #print(element2Ds[1].ID())
@@ -132,9 +145,15 @@ class Mesh(object):
 #nodes[0].load = [[0,0],[0,0]]
 
 if __name__ == '__main__':
+    
+    # Disable memory pool for device memory (GPU)
+    n.cuda.set_allocator(None)
+
+    # Disable memory pool for pinned memory (CPU).
+    n.cuda.set_pinned_memory_allocator(None)
 #print(element2Ds[1].ID())
-    nx = 80
-    ny = 80
+    nx = 120
+    ny = 60
     elenum = (nx-1)*(ny-1)
     m = Mesh(nx,ny)
     E = 100*n.ones(elenum)

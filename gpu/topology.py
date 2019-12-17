@@ -1,16 +1,23 @@
 from fem2d import *
 import cupy as cp
-from sko.GA import GA
-from sko.PSO import PSO
 import math
+    
+    # Disable memory pool for device memory (GPU)
+cp.cuda.set_allocator(None)
 
-nx = 60
-ny = 60
-den = 0.5
+    # Disable memory pool for pinned memory (CPU).
+cp.cuda.set_pinned_memory_allocator(None)
+
+
+nx = 90
+ny = 80
+den = 0.2
 h = 3
 m = Mesh(nx,ny)
 elenum = (nx-1)*(ny-1)
 dens = cp.full(elenum,den)
+E = dens**h
+nodes,element2Ds = m.create(E)
 
 def OC(nx,ny,dens,den,dc):
     l1 = 0
@@ -38,7 +45,7 @@ def OC(nx,ny,dens,den,dc):
 for i in range(30):
     #print(dens)
     E = dens**h
-    nodes,element2Ds = m.create(E)
+    element2Ds = m.changeE(element2Ds,E)
     s = System(nodes,element2Ds)
     dc = s.dc(h,dens)
     densnew = OC(nx,ny,dens,den,dc)

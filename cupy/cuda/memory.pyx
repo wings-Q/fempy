@@ -775,7 +775,7 @@ cdef bint _remove_from_free_list(_Arena a, _Chunk chunk) except *:
 
 # cudaMalloc() is aligned to at least 512 bytes
 # cf. https://gist.github.com/sonots/41daaa6432b1c8b27ef782cd14064269
-DEF ALLOCATION_UNIT_SIZE = 512
+DEF ALLOCATION_UNIT_SIZE = 1024
 # for test
 _allocation_unit_size = ALLOCATION_UNIT_SIZE
 
