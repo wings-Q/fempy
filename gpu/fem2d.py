@@ -25,15 +25,15 @@ class element2D(object):
         s = (1-3*self.v)/8
         H = 1/(1-self.v**2)
         r = (1-self.v)/2
-        k = [al+r*be,m,r*al/2-be,-s,-be/2-r*al/2,-m,be/2-r*al,s,be+r*al]
+        k = [al+r*be,m,r*al/2-be,-s,-be/2-r*al/2,-m,be/2-r*al,s,be+r*al,al/2-r*be,al/2-r*be/2,r*be/2-al,-al/2-r*be/2,r*al/2-be]
         ke = n.asarray([[k[8],k[1],k[2],k[3],k[4],k[5],k[6],k[7]],\
-                        [k[1],k[0],k[7],k[6],k[5],k[4],k[3],k[2]],\
+                        [k[1],k[0],k[7],k[9],k[5],k[10],k[3],k[11]],\
                         [k[2],k[7],k[8],k[5],k[6],k[3],k[4],k[1]],\
-                        [k[3],k[6],k[5],k[0],k[7],k[2],k[1],k[4]],\
-                        [k[4],k[5],k[6],k[7],k[8],k[1],k[2],k[3]],\
-                        [k[5],k[4],k[3],k[2],k[1],k[0],k[7],k[6]],\
-                        [k[6],k[3],k[4],k[1],k[2],k[7],k[8],k[5]],\
-                        [k[7],k[2],k[1],k[4],k[3],k[6],k[5],k[0]]])
+                        [k[3],k[9],k[5],k[0],k[7],k[11],k[1],k[12]],\
+                        [k[4],k[5],k[6],k[7],k[8],k[1],k[13],k[3]],\
+                        [k[5],k[10],k[3],k[11],k[1],k[0],k[7],k[9]],\
+                        [k[6],k[3],k[4],k[1],k[13],k[7],k[8],k[5]],\
+                        [k[7],k[11],k[1],k[12],k[3],k[9],k[5],k[0]]])
 
         
         return (self.E*H*self.t)*ke
@@ -102,17 +102,19 @@ class System(object):
         return dcs
 
 class Mesh(object):
-    def __init__(self,nx,ny):
+    def __init__(self,nx,ny,a,b):
         self.nx = nx
         self.ny = ny
+        self.a = a
+        self.b = b
     def create(self,E):
         nodes = []
         element2Ds = []
         k = 0
         for i in range(self.nx):
-            positionx = i
+            positionx = i*2*self.a
             for j in range(self.ny):
-                positiony = j
+                positiony = j*2*self.b
                 if i == 0 and (self.ny//2-6)<j<(self.ny//2+7):
                     nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
                 elif i == self.nx-1:
