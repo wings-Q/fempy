@@ -132,7 +132,7 @@ class Mesh(object):
                 e = E[i*(self.ny-1)+j]
                 #print(e)
                 
-                element2Ds.append(element2D([n1,n2,n3,n4],1,0.2,e))
+                element2Ds.append(element2D([n1,n2,n3,n4],0.1,0.2,e))
         return nodes,element2Ds
     
     def changeE(self,element2Ds,E):
@@ -153,18 +153,18 @@ if __name__ == '__main__':
     # Disable memory pool for pinned memory (CPU).
     n.cuda.set_pinned_memory_allocator(None)
 #print(element2Ds[1].ID())
-    nx = 81
-    ny = 81
+    nx = 120
+    ny = 60
     elenum = (nx-1)*(ny-1)
     m = Mesh(nx,ny,1,1)
-    E = 100*n.ones(elenum)
+    E = 100000*n.ones(elenum)
     nodes,element2Ds = m.create(E)
     s = System(nodes,element2Ds)
-    loads1 = [{'nodeID':nx-1,'load':[[0,0],[0,0]]},{'nodeID':nx*ny-1,'load':[[0,0],[0,0]]},{'nodeID':ny*(nx//3),'load':[[None,None],[0,2]]}]
+    loads1 = [{'nodeID':ny-1,'load':[[0,0],[0,0]]},{'nodeID':nx*ny-1,'load':[[0,0],[0,0]]},{'nodeID':ny*(nx//2),'load':[[None,None],[0,-2]]},{'nodeID':ny*(nx//2-1),'load':[[None,None],[0,-2]]}]
     loads2 = [{'nodeID':nx*ny-ny//3-1,'load':[[0,0],[0,0]]}]
     for i in range(nx-1):
         loads2.append({'nodeID':i,'load':[[None,None],[-2,0]]})
-    s.load(loads2)
+    s.load(loads1)
     delta,force = s.solve()
     deltay = n.abs(delta[1::2])
     deltayimage = deltay.reshape((nx,ny)).T
