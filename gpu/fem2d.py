@@ -1,5 +1,6 @@
 import cupy as n
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Node(object):
@@ -79,14 +80,19 @@ class System(object):
             trany = load[0][1]
             forcex = load[1][0]
             forcey = load[1][1]
-            if tranx != None:
-                k1[2*i, 2*i] = k1[2*i, 2*i]*(10**8)
-                P[2*i] = k1[2*i, 2*i]*tranx
+            print(i)
             if trany != None:
-                k1[2*i+1, 2*i+1] = k1[2*i+1, 2*i+1]*(10**8)
-                P[2*i+1] = k1[2*i+1, 2*i+1]*trany
+                k1[(2*i)+1, (2*i)+1] = k1[(2*i)+1, (2*i)+1]*(10**13)
+                P[(2*i)+1] = k1[(2*i)+1, (2*i)+1]*trany
+            if tranx != None:
+                k1[2*i, 2*i] = k1[2*i, 2*i]*(10**13)
+                P[2*i] = k1[2*i, 2*i]*tranx
+
             P[2*i] = P[2*i]+forcex
             P[2*i+1] = P[2*i+1]+forcey
+#        print(k1,P)
+        k1np = n.asnumpy(k1)
+        np.savetxt('k1', k1np)
         delta = n.linalg.solve(k1, P)
         Force = n.dot(k0, delta)
         return delta, Force
@@ -158,15 +164,15 @@ if __name__ == '__main__':
     # Disable memory pool for pinned memory (CPU).
     n.cuda.set_pinned_memory_allocator(None)
 # print(element2Ds[1].ID())
-    nx = 120
-    ny = 60
+    nx = 50
+    ny = 100
     elenum = (nx-1)*(ny-1)
     m = Mesh(nx, ny, 1, 1)
     E = 100000*n.ones(elenum)
     nodes, element2Ds = m.create(E)
     s = System(nodes, element2Ds)
-    loads1 = [{'nodeID': ny-1, 'load': [[0, 0], [0, 0]]}, {'nodeID': nx*ny-1, 'load': [[0, 0], [0, 0]]},
-              {'nodeID': ny*(nx//2), 'load': [[None, None], [0, -2]]}, {'nodeID': ny*(nx//2-1), 'load': [[None, None], [0, -2]]}]
+    loads1 = [{'nodeID': ny-1, 'load': [[0, 0], [-1, 0]]}, {'nodeID': 0, 'load': [[None, None], [-1, 0]]},
+              {'nodeID': nx*ny-ny//2, 'load': [[None, None], [2, 0]]}]
     loads2 = [{'nodeID': nx*ny-ny//3-1, 'load': [[0, 0], [0, 0]]}]
     for i in range(nx-1):
         loads2.append({'nodeID': i, 'load': [[None, None], [-2, 0]]})
@@ -195,3 +201,8 @@ if __name__ == '__main__':
     forceximage = n.asnumpy(forceximage)
     plt.imshow(forceximage)
     plt.savefig("tmp\\forcex.png")
+
+    np.savetxt('deltax', deltaximage)
+    np.savetxt('deltay', deltayimage)
+    np.savetxt('forcex', forceximage)
+    np.savetxt('forcey', forceyimage)
