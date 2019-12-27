@@ -92,7 +92,7 @@ class System(object):
             P[2*i+1] = P[2*i+1]+forcey
 #        print(k1,P)
         k1np = n.asnumpy(k1)
-        np.savetxt('k1', k1np)
+#        np.savetxt('k1', k1np)
         delta = n.linalg.solve(k1, P)
         Force = n.dot(k0, delta)
         return delta, Force
