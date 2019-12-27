@@ -91,10 +91,10 @@ class Mesh(object):
             positionx = i
             for j in range(self.ny):
                 positiony = j
-                if i == 0:
+                if j == 0:
                     nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
-                elif i == self.nx-1:
-                    nodes.append(Node(k,[i,j],[[None,None],[1,0]]))
+                elif j == self.ny-1 and i == 40:
+                    nodes.append(Node(k,[i,j],[[None,None],[0,3]]))
                 else:
                     nodes.append(Node(k,[i,j]))
                 k = k+1

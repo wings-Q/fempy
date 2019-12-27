@@ -109,6 +109,19 @@ class System(object):
             dc = h*(dens[i])**(h-1)*n.dot(eldelta.T, n.dot(el2d.KE(), eldelta))
             dcs.append(dc[0][0])
         return dcs
+    
+    def cmat(self,h,dens):
+        cs = []
+        delta, force = self.solve()
+        for i, el2d in enumerate(self.el2ds):
+            eldelta = []
+            for elid in el2d.ID():
+                eldelta.append(delta[2*elid])
+                eldelta.append(delta[2*elid+1])
+            eldelta = n.asarray(eldelta)
+            c = (dens[i])**h*n.dot(eldelta.T, n.dot(el2d.KE(), eldelta))
+            cs.append(c[0][0])
+        return cs
 
     def load(self, loads):
         for load in loads:
@@ -164,11 +177,11 @@ if __name__ == '__main__':
     # Disable memory pool for pinned memory (CPU).
     n.cuda.set_pinned_memory_allocator(None)
 # print(element2Ds[1].ID())
-    nx = 50
-    ny = 100
+    nx = 20
+    ny = 40
     elenum = (nx-1)*(ny-1)
     m = Mesh(nx, ny, 1, 1)
-    E = 100000*n.ones(elenum)
+    E = 0.5**3*n.ones(elenum)
     nodes, element2Ds = m.create(E)
     s = System(nodes, element2Ds)
     loads1 = [{'nodeID': ny-1, 'load': [[0, 0], [-1, 0]]}, {'nodeID': 0, 'load': [[None, None], [-1, 0]]},
@@ -177,6 +190,9 @@ if __name__ == '__main__':
     for i in range(nx-1):
         loads2.append({'nodeID': i, 'load': [[None, None], [-2, 0]]})
     s.load(loads1)
+    elenum = (nx-1)*(ny-1)
+    dens = n.full(elenum, 0.5)
+    print(s.cmat(3,dens))
     delta, force = s.solve()
     deltay = n.abs(delta[1::2])
     deltayimage = deltay.reshape((nx, ny)).T
