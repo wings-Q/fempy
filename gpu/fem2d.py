@@ -19,7 +19,7 @@ class element2D(object):
         self.t = t
 
     def KE(self):
-        a = (self.nodes[0].position[0]-self.nodes[1].position[0])/2
+        a = (self.nodes[1].position[0]-self.nodes[0].position[0])/2
         b = (self.nodes[2].position[1]-self.nodes[1].position[1])/2
         al = a/(3*b)
         be = b/(3*a)
