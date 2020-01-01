@@ -24,8 +24,16 @@ class element2D(object):
         s = (1-3*self.v)/8
         H = 1/(1-self.v**2)
         r = (1-self.v)/2
-        k = [al+r*be,m,r*al/2-be,-s,-be/2-r*al/2,-m,be/2-r*al,s]
-        ke = n.matrix([[k[0],k[1],k[2],k[3],k[4],k[5],k[6],k[7]],[k[1],k[0],k[7],k[6],k[5],k[4],k[3],k[2]],[k[2],k[7],k[0],k[5],k[6],k[3],k[4],k[1]],[k[3],k[6],k[5],k[0],k[7],k[2],k[1],k[4]],[k[4],k[5],k[6],k[7],k[0],k[1],k[2],k[3]],[k[5],k[4],k[3],k[2],k[1],k[0],k[7],k[6]],[k[6],k[3],k[4],k[1],k[2],k[7],k[0],k[5]],[k[7],k[2],k[1],k[4],k[3],k[6],k[5],k[0]]])
+        k = [al+r*be, m, r*al/2-be, -s, -be/2-r*al/2, -m, be/2-r*al, s, be +
+             r*al, al/2-r*be, al/2-r*be/2, r*be/2-al, -al/2-r*be/2, r*al/2-be]
+        ke = n.asarray([[be+r*al,m,-be+r*al/2,-s,-be/2-r*al/2,-m,be/2-r*al,s],
+                        [m,al+r*be,s,al/2-r*be,-m,-al/2-r*be/2,-s,-al+r*be/2],
+                        [-be+r*al/2,s,be+r*al,-m,be/2-r*al,-s,-be/2-r*al/2,m],
+                        [-s,al/2-r*be,-m,al+r*be,s,-al+r*be/2,m,-al/2-r*be/2],
+                        [-be/2-r*al/2,-m,be/2-r*al,s,be+r*al,m,-be+r*al/2,-s],
+                        [-m,-al/2-r*be/2,-s,-al+r*be/2,m,al+r*be,s,al/2-r*be],
+                        [be/2-r*al,-s,-be/2-r*al/2,m,-be+r*al/2,s,be+r*al,-m],
+                        [s,-al+r*be/2,m,-al/2-r*be/2,-s,al/2-r*be,-m,al+r*be]])
         
         return (self.E*H*self.t)*ke
         
@@ -92,11 +100,11 @@ class Mesh(object):
             for j in range(self.ny):
                 positiony = j
                 if j == 0:
-                    nodes.append(Node(k,[i,j],[[0,0],[0,0]]))
+                    nodes.append(Node(k,[positionx,positiony],[[0,0],[0,0]]))
                 elif j == self.ny-1 and i == 40:
-                    nodes.append(Node(k,[i,j],[[None,None],[0,3]]))
+                    nodes.append(Node(k,[positionx,positiony],[[None,None],[0,3]]))
                 else:
-                    nodes.append(Node(k,[i,j]))
+                    nodes.append(Node(k,[positionx,positiony]))
                 k = k+1
         for i in range(self.nx-1):
             for j in range(self.ny-1):
