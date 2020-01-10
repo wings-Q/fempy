@@ -30,11 +30,11 @@ class element2D(object):
         k = [al+r*be, m, r*al/2-be, -s, -be/2-r*al/2, -m, be/2-r*al, s, be +
              r*al, al/2-r*be, al/2-r*be/2, r*be/2-al, -al/2-r*be/2, r*al/2-be]
         ke = n.asarray([[k[8], k[1], k[2], k[3], k[4], k[5], k[6], k[7]],
-                        [k[1], k[0], k[7], k[9], k[5], k[10], k[3], k[11]],
+                        [k[1], k[0], k[7], k[9], k[5], k[12], k[3], k[11]],
                         [k[2], k[7], k[8], k[5], k[6], k[3], k[4], k[1]],
                         [k[3], k[9], k[5], k[0], k[7], k[11], k[1], k[12]],
                         [k[4], k[5], k[6], k[7], k[8], k[1], k[13], k[3]],
-                        [k[5], k[10], k[3], k[11], k[1], k[0], k[7], k[9]],
+                        [k[5], k[12], k[3], k[11], k[1], k[0], k[7], k[9]],
                         [k[6], k[3], k[4], k[1], k[13], k[7], k[8], k[5]],
                         [k[7], k[11], k[1], k[12], k[3], k[9], k[5], k[0]]])
 
@@ -109,8 +109,8 @@ class System(object):
             dc = h*(dens[i])**(h-1)*n.dot(eldelta.T, n.dot(el2d.KE(), eldelta))
             dcs.append(dc[0][0])
         return dcs
-    
-    def cmat(self,h,dens):
+
+    def cmat(self, h, dens):
         cs = []
         delta, force = self.solve()
         for i, el2d in enumerate(self.el2ds):
@@ -177,14 +177,14 @@ if __name__ == '__main__':
     # Disable memory pool for pinned memory (CPU).
     n.cuda.set_pinned_memory_allocator(None)
 # print(element2Ds[1].ID())
-    nx = 20
-    ny = 40
+    nx = 50
+    ny = 100
     elenum = (nx-1)*(ny-1)
     m = Mesh(nx, ny, 1, 1)
     E = 0.5**3*n.ones(elenum)
     nodes, element2Ds = m.create(E)
     s = System(nodes, element2Ds)
-    loads1 = [{'nodeID': ny-1, 'load': [[0, 0], [-1, 0]]}, {'nodeID': 0, 'load': [[None, None], [-1, 0]]},
+    loads1 = [{'nodeID': ny-1, 'load': [[0, 0], [0, 0]]}, {'nodeID': 0, 'load': [[0, 0], [0, 0]]},
               {'nodeID': nx*ny-ny//2, 'load': [[None, None], [2, 0]]}]
     loads2 = [{'nodeID': nx*ny-ny//3-1, 'load': [[0, 0], [0, 0]]}]
     for i in range(nx-1):
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     s.load(loads1)
     elenum = (nx-1)*(ny-1)
     dens = n.full(elenum, 0.5)
-    print(s.cmat(3,dens))
+#    print(s.cmat(3, dens))
     delta, force = s.solve()
     deltay = n.abs(delta[1::2])
     deltayimage = deltay.reshape((nx, ny)).T
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     plt.imshow(forceximage)
     plt.savefig("tmp\\forcex.png")
 
-    np.savetxt('deltax', deltaximage)
-    np.savetxt('deltay', deltayimage)
-    np.savetxt('forcex', forceximage)
-    np.savetxt('forcey', forceyimage)
+#    np.savetxt('deltax', deltaximage)
+#    np.savetxt('deltay', deltayimage)
+#    np.savetxt('forcex', forceximage)
+#    np.savetxt('forcey', forceyimage)

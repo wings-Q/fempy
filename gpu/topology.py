@@ -9,15 +9,17 @@ cp.cuda.set_allocator(None)
 cp.cuda.set_pinned_memory_allocator(None)
 
 
-nx = 20
-ny = 40
+nx = 25
+ny = 50
 den = 0.5
 h = 3
 m = Mesh(nx, ny, 1, 1)
-loads1 = [{'nodeID': ny-1, 'load': [[0, 0], [-1, 0]]}, {'nodeID': 0, 'load': [[None, None], [-1, 0]]},
-              {'nodeID': nx*ny-ny//2, 'load': [[None, None], [2, 0]]}]
-loads2 = [{'nodeID': nx-1, 'load': [[None, 0], [0, 0]]}, {'nodeID': nx*ny-1,
-                                                          'load': [[None, 0], [0, 0]]}, {'nodeID': ny*(nx//3*2)-1, 'load': [[None, None], [0, 2]]}]
+loads1 = [{'nodeID': ny-1, 'load': [[0, 0], [0, 0]]},
+          {'nodeID': 0, 'load': [[0, 0], [0, 0]]},
+          {'nodeID': nx*ny-ny//2, 'load': [[None, None], [2, 0]]}]
+loads2 = [{'nodeID': nx-1, 'load': [[None, 0], [0, 0]]},
+          {'nodeID': nx*ny-1, 'load': [[None, 0], [0, 0]]},
+          {'nodeID': ny*(nx//3*2)-1, 'load': [[None, None], [0, 2]]}]
 elenum = (nx-1)*(ny-1)
 dens = cp.full(elenum, den)
 E = dens**h
@@ -34,7 +36,7 @@ def OC(nx, ny, dens, den, dc):
         for n, densipy in enumerate(dens):
             # print(dc[n])
             dennew = max((0.001, max(
-                densipy-move, min(1.0, min(densipy+move, densipy*math.sqrt(-dc[n]/lmid))))))
+                densipy-move, min(1.0, min(densipy+move, densipy*math.sqrt(dc[n]/lmid))))))
             if isinstance(dennew, float):
                 pass
             else:
@@ -48,11 +50,13 @@ def OC(nx, ny, dens, den, dc):
     # print(densnew)
     return cp.asarray(densnew)
 
-def dc(system,w,dens):
+
+def dc(system, w, dens):
     dcsharp = system[0].dc(h, dens)
-    dc=cp.zeros_like(dcsharp)
-    for n,s in enumerate(system):
-        dcmat = ((w[n]**h)*h*((s.cmat(h,dens)-cp.min(s.cmat(h,dens)))/(cp.max(s.cmat(h,dens))-cp.min(s.cmat(h,dens))))**(h-1))*s.dc(h,dens)
+    dc = cp.zeros_like(dcsharp)
+    for n, s in enumerate(system):
+        dcmat = ((w[n]**h)*h*((s.cmat(h, dens)-cp.min(s.cmat(h, dens))) /
+                              (cp.max(s.cmat(h, dens))-cp.min(s.cmat(h, dens))))**(h-1))*s.dc(h, dens)
         dc = dc + dcmat
     return dc**(1/h)
 
@@ -64,9 +68,10 @@ for i in range(30):
     s1 = System(nodes, element2Ds)
     s2 = System(nodes, element2Ds)
     s1.load(loads1)
-    w = [0.5,0.5]
+    s2.load(loads2)
+    w = [0.5, 0.5]
     dc = s1.dc(h, dens)
-    print(dc)
+#    print(dc)
     densnew = OC(nx, ny, dens, den, dc)
     densimage = cp.asarray(densnew)
     denimage = densimage.reshape((nx-1, ny-1)).T
